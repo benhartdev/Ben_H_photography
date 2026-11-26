@@ -1,0 +1,10 @@
+# Originaux haute définition : trop lourds pour GitHub (gardés seulement sur le PC)
+photos/
+
+# Fichiers système
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Réglages locaux de Claude Code
+.claude/

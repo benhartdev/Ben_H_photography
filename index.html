@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Perspectives — Benjamin H., photographe</title>
+  <meta name="description" content="Perspectives : une traversée immersive dans les photographies de Benjamin H.">
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="is-loading">
+
+  <!-- La scène 3D est dessinée dans ce canevas -->
+  <canvas id="gl" aria-hidden="true"></canvas>
+
+  <!-- ===== Écran d'entrée (au centre) ===== -->
+  <div class="loader" id="loader">
+    <div class="loader__center">
+      <div class="loader__ring">
+        <svg viewBox="0 0 200 200" aria-hidden="true">
+          <circle cx="100" cy="100" r="96" class="ring-bg"/>
+          <circle cx="100" cy="100" r="96" class="ring-fg" id="ringFg"/>
+        </svg>
+        <div class="loader__pct"><span id="loaderPct">000</span></div>
+      </div>
+      <p class="loader__name">Benjamin H.</p>
+      <p class="loader__sub" id="loaderSub">Préparation de la traversée</p>
+      <div class="loader__enter" id="loaderEnter">
+        <button class="enter" id="enterSound" data-cursor="Entrer"><span>Entrer avec le son</span></button>
+        <button class="enter enter--ghost" id="enterSilent" data-cursor="Entrer"><span>Entrer en silence</span></button>
+      </div>
+    </div>
+    <p class="loader__foot">Perspectives — une traversée photographique</p>
+  </div>
+
+  <!-- ===== Message si le site n'est pas lancé correctement ===== -->
+  <div class="notice" id="notice" hidden>
+    <div class="notice__box">
+      <p class="notice__kicker">Un instant</p>
+      <h2 class="notice__title" id="noticeTitle"></h2>
+      <div class="notice__text" id="noticeText"></div>
+    </div>
+  </div>
+
+  <!-- ===== Interface (tableau de bord) ===== -->
+  <header class="hud hud-top">
+    <a href="#" class="brand" id="brand" data-cursor="Début">
+      <span class="brand__name">Benjamin H.</span>
+      <span class="brand__role">Photographe</span>
+    </a>
+    <nav class="menu">
+      <button id="btnIndex">Index</button>
+      <button id="btnAbout">À propos</button>
+      <button id="btnSound" class="sound" aria-pressed="false">
+        <span class="sound__bars"><i></i><i></i><i></i><i></i></span><span id="soundLabel">Son</span>
+      </button>
+    </nav>
+  </header>
+
+  <div class="hud hud-rail" aria-hidden="true">
+    <div class="rail" id="rail"><span class="rail__fill" id="railFill"></span></div>
+  </div>
+
+  <footer class="hud hud-bottom">
+    <div class="now">
+      <span class="now__chapter" id="nowChapter">Prologue</span>
+      <span class="now__title" id="nowTitle">Perspectives</span>
+    </div>
+    <div class="hint" id="hint"><i></i><span>Faites défiler pour avancer</span></div>
+    <div class="coords">
+      <span>Z <b id="coordZ">+0000.0</b></span>
+      <span><b id="coordPct">000</b> %</span>
+    </div>
+  </footer>
+
+  <!-- ===== Photo ouverte ===== -->
+  <div class="focus" id="focus" aria-hidden="true">
+    <div class="focus__info">
+      <span class="focus__num" id="focusNum"></span>
+      <h2 class="focus__title" id="focusTitle"></h2>
+      <span class="focus__meta" id="focusMeta"></span>
+    </div>
+    <div class="focus__nav">
+      <button id="focusPrev" data-cursor="Précédente">← Précédente</button>
+      <button id="focusClose" data-cursor="Fermer">Revenir</button>
+      <button id="focusNext" data-cursor="Suivante">Suivante →</button>
+    </div>
+  </div>
+
+  <!-- ===== Index de toutes les photos ===== -->
+  <div class="index" id="index" aria-hidden="true">
+    <div class="index__head">
+      <p class="index__kicker">Index</p>
+      <button class="index__close" id="indexClose" data-cursor="Fermer">Fermer</button>
+    </div>
+    <div class="index__list" id="indexList"></div>
+    <canvas class="index__preview" id="indexPreview" width="640" height="640"></canvas>
+  </div>
+
+  <!-- ===== À propos (au bout du couloir) ===== -->
+  <section class="about" id="about" aria-hidden="true">
+    <div class="about__inner">
+      <p class="about__kicker">Épilogue</p>
+      <h2 class="about__quote">« Je photographie les lignes qui fuient, la lumière qui reste. »</h2>
+      <p class="about__text">
+        Photographe, je parcours les villes la nuit, les ponts, les machines et les espaces
+        où l'architecture devient vertige. Noir et blanc, perspectives tendues, silence :
+        chaque image est une invitation à regarder plus longtemps.
+      </p>
+      <div class="about__contact">
+        <a href="mailto:contact@exemple.fr" class="about__mail" data-cursor="Écrire">contact@exemple.fr</a>
+        <div class="about__links">
+          <a href="#" data-cursor="Ouvrir">Instagram</a>
+          <a href="#" data-cursor="Ouvrir">LinkedIn</a>
+        </div>
+      </div>
+      <button class="about__restart" id="restart" data-cursor="Retour">Recommencer la traversée ↺</button>
+    </div>
+  </section>
+
+  <!-- ===== Curseur ===== -->
+  <div class="cursor" id="cursor"><span class="cursor__label" id="cursorLabel"></span></div>
+
+  <!-- Bibliothèque 3D (Three.js) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- La liste de tes photos -->
+  <script src="js/photos.js"></script>
+  <!-- L'expérience -->
+  <script src="js/main.js"></script>
+</body>
+</html>
