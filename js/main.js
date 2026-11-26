@@ -198,7 +198,7 @@
       a *= smoothstep(0.0, 0.35, vH) * (1.0 - smoothstep(0.62, 0.95, vH));
       a *= (1.0 - smoothstep(12.0, 30.0, vDepth)) * smoothstep(0.4, 2.5, vDepth);
       a *= 0.9 + 0.1 * sin(uTime * 1.6 + vH * 11.0);
-      gl_FragColor = vec4(uColor, a * 0.055);
+      gl_FragColor = vec4(uColor, a * 0.03);
     }`;
   const GLOW_VERT = `
     varying vec2 vUv; varying float vDepth;
@@ -293,7 +293,7 @@
         });
         it.pool = new THREE.Mesh(poolGeo, glowMat(new THREE.Color(0.78, 0.84, 1.0), 2.0, 0.28));
         it.pool.rotation.x = -Math.PI / 2;
-        it.halo = new THREE.Mesh(quad, glowMat(new THREE.Color(0.35, 0.45, 0.95), 2.4, 0.3));
+        it.halo = new THREE.Mesh(quad, glowMat(new THREE.Color(0.35, 0.45, 0.95), 2.6, 0.15));
         it.halo.renderOrder = -1;
         w.group.add(it.beam, it.pool, it.halo);
       }
@@ -1061,7 +1061,7 @@
         const on = smooth(0.1, 0.9, u.uReveal.value) * (mode === "focus" && it !== focusItem ? 0.15 : 1);
         it.light.value = lerp(it.light.value, on, f(0.05));
         it.pool.material.uniforms.uInt.value = it.light.value * it.pool.material.userData.k;
-        it.halo.material.uniforms.uInt.value = it.light.value * it.halo.material.userData.k * (1 + u.uHover.value * 0.6);
+        it.halo.material.uniforms.uInt.value = it.light.value * it.halo.material.userData.k * (1 + u.uHover.value * 0.35);
         /* on ne dessine la lumière que pour les œuvres allumées et pas trop loin */
         const lit = it.light.value > 0.01 && ahead < 32 && ahead > -4;
         it.beam.visible = it.pool.visible = it.halo.visible = lit;
