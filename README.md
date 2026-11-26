@@ -1,4 +1,4 @@
-# Perspectives — Benjamin H., photographe
+# Perspectives — Benjamin Hoffelé, photographe
 
 Site portfolio immersif en 3D. On ne fait pas défiler une page : on **avance dans un couloir**
 où les photographies flottent de part et d'autre, se matérialisent à l'approche et se reflètent

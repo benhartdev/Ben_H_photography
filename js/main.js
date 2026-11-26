@@ -17,6 +17,14 @@
   const isTouch = matchMedia("(pointer: coarse)").matches;
   const motion = matchMedia("(prefers-reduced-motion: reduce)").matches ? 0.3 : 1;
 
+  /* ---------- Coordonnées : reconstituées ici pour ne pas apparaître en clair dans la page ---------- */
+  {
+    const m = ["ben", "hoffele", "photographe"].join(".") + String.fromCharCode(64) + ["outlook", "fr"].join(".");
+    const t = ["06", "68", "10", "52", "51"];
+    document.querySelectorAll('[data-contact="mail"]').forEach((a) => { a.href = "mailto:" + m; a.textContent = m; });
+    document.querySelectorAll('[data-contact="tel"]').forEach((a) => { a.href = "tel:+33" + t.join("").slice(1); a.textContent = t.join(" "); });
+  }
+
   function notice(title, html) {
     $("#noticeTitle").textContent = title;
     $("#noticeText").innerHTML = html;
@@ -439,7 +447,7 @@
   function buildTitles(w) {
     const I = w.st.ink, A = w.st.accent;
     textPlane(w, [
-      { text: `BENJAMIN H.  —  ${(w.accroche || "").toUpperCase()}`, font: `300 34px ${MONO}`, color: A + ".7)", spacing: "14px", y: 300 },
+      { text: `BENJAMIN HOFFELÉ  —  ${(w.accroche || "").toUpperCase()}`, font: `300 34px ${MONO}`, color: A + ".7)", spacing: "14px", y: 300 },
       { text: w.nom, font: `italic 300 300px ${SERIF}`, color: I + "1)", y: 540 },
       { rule: 120, color: A + ".45)", y: 720 },
       { text: w.sousTitre, font: `300 60px ${SERIF}`, color: I + ".7)", y: 800 }
@@ -456,8 +464,9 @@
       { text: "ÉPILOGUE", font: `300 30px ${MONO}`, color: A + ".7)", spacing: "14px", y: 140 },
       { text: txt(".about__quote"), font: `italic 300 108px ${SERIF}`, color: I + "1)", y: 290, wrap: 1760, lh: 118 },
       { text: txt(".about__text"), font: `300 36px Inter, sans-serif`, color: I + ".62)", y: 560, wrap: 1180, lh: 60 },
-      { text: txt(".about__mail"), font: `300 80px ${SERIF}`, color: I + "1)", y: 820 },
-      { rule: 160, color: A + ".5)", y: 872 }
+      { text: txt(".about__mail"), font: `300 72px ${SERIF}`, color: I + "1)", y: 800 },
+      { text: txt(".about__tel"), font: `300 34px ${MONO}`, color: I + ".6)", spacing: "10px", y: 880 },
+      { rule: 160, color: A + ".5)", y: 930 }
     ], 7.4, 3.7, w.EPI_Z, { epi: true, y: 0.1 });
     layoutWorld(w);
   }
