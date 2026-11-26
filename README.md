@@ -9,7 +9,7 @@ sur un sol invisible.
 | Univers | Contenu | Ambiance |
 |---|---|---|
 | **Perspectives** | Photographies (architecture, ville, nuit, industrie, nature) | Couloir noir, photos de part et d'autre, lignes de fuite |
-| **Écrins** | Objets d'art | Œuvres en lévitation dans le noir, chacune sous son projecteur, halo bleuté |
+| **Écrins** | Mise en valeur d'objets d'art | Œuvres en lévitation dans le noir, chacune sous son projecteur, halo bleuté |
 
 On passe de l'un à l'autre par le menu **Univers** : effet de téléportation (aspiration, distorsion,
 fondu au noir) puis arrivée dans l'autre monde.

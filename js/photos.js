@@ -93,7 +93,7 @@ const CHAPITRES = [
 ];
 
 /* =========================================================
-   UNIVERS « ÉCRINS » — OBJETS D'ART
+   UNIVERS « ÉCRINS » — MISE EN VALEUR D'OBJETS D'ART
    (copies allégées dans photos-web/objets/)
    ========================================================= */
 const CHAPITRES_OBJETS = [
@@ -152,7 +152,7 @@ const CHAPITRES_OBJETS = [
    ========================================================= */
 const UNIVERS = [
   { nom: "Perspectives", accroche: "Photographies", sousTitre: "Une traversée en noir et blanc", style: "couloir", dossier: DOSSIER_PHOTOS, chapitres: CHAPITRES },
-  { nom: "Écrins", accroche: "Objets d'art", sousTitre: "La matière sous la lumière", style: "ecrin", dossier: "photos-web/objets/", chapitres: CHAPITRES_OBJETS }
+  { nom: "Écrins", accroche: "Mise en valeur d'objets d'art", sousTitre: "La matière sous la lumière", style: "ecrin", dossier: "photos-web/objets/", chapitres: CHAPITRES_OBJETS }
 ];
 
 /* Doublons laissés de côté (même image que d'autres fichiers) :

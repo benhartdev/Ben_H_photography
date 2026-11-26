@@ -302,7 +302,7 @@ body.is-about .about { opacity: 1; pointer-events: auto; }
 .about__mail:hover::after { transform: scaleX(1); }
 .about__tel { font-family: var(--mono); font-weight: 300; font-size: clamp(13px, 1vw, 16px); letter-spacing: .2em; color: var(--mute); transition: color .3s; }
 .about__tel:hover { color: var(--ink); }
-.about__links { display: flex; gap: 32px; font-family: var(--mono); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--mute); }
+.about__links { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px 40px; font-family: var(--mono); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--mute); }
 .about__links a:hover { color: var(--ink); }
 .about__actions { margin-top: 3vh; display: flex; flex-direction: column; align-items: center; gap: 22px; }
 .about__next {
