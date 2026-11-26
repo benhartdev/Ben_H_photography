@@ -107,8 +107,8 @@
         col = acc / 10.0;
         col += uWarp * uWarp * 0.35 * vec3(0.85, 0.9, 1.0) * (1.0 - smoothstep(0.0, 0.5, length(c)));
         col *= 1.0 - smoothstep(0.7, 1.0, uWarp) * 0.92;
-        float vig = smoothstep(0.92, 0.18, length(c * vec2(1.0, 0.92)));
-        col *= mix(0.28, 1.0, vig);
+        float vig = smoothstep(1.0, 0.3, length(c * vec2(1.0, 0.92)));
+        col *= mix(0.5, 1.0, vig);
         /* tramage invisible (1/255) : évite les « marches » dans les dégradés sombres, sans grain visible */
         col += (hash(vUv * uRes) - 0.5) / 255.0;
         gl_FragColor = vec4(col, 1.0);
