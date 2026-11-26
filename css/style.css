@@ -175,7 +175,13 @@ body.is-warp .hud-bottom, body.is-warp .hud-rail { opacity: 0; transition-delay:
   .hud-bottom { grid-template-columns: 1fr auto; }
   .coords { gap: 14px; }
   .coords span:first-child { display: none; }
-  .menu { gap: 16px; }
+  .menu { gap: 14px; font-size: 10px; letter-spacing: .14em; }
+  .menu button { white-space: nowrap; }
+  .sound__bars { display: none; }
+  .brand__name { font-size: 21px; white-space: nowrap; }
+  .brand__role { font-size: 9px; }
+  .focus { flex-direction: column; align-items: flex-start; gap: 18px; }
+  .focus__nav { gap: 20px; }
 }
 
 /* =========================================================
@@ -192,6 +198,10 @@ body.is-focus .focus { opacity: 1; transform: none; pointer-events: auto; transi
 .focus__num { color: var(--mute); }
 .focus__title { font-family: var(--serif); font-style: italic; font-weight: 300; font-size: clamp(32px, 3.2vw, 60px); line-height: 1; }
 .focus__meta { color: var(--mute); }
+.focus__hint { font-family: var(--mono); font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: rgba(235, 231, 224, .38); margin-top: 6px; }
+.focus__info { transition: opacity .6s var(--ease); }
+body.is-zoom .focus__info { opacity: 0; }
+body.is-zoom .hud-top { opacity: .35; }
 .focus__nav { display: flex; gap: 28px; font-family: var(--mono); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; }
 .focus__nav button { color: var(--mute); transition: color .3s; }
 .focus__nav button:hover { color: var(--ink); }

@@ -59,7 +59,8 @@
   const FLY_IN = 16;         // recul de la caméra à l'arrivée dans un univers
   const FLOOR_Y = -1.75;     // sol (pour les reflets)
   const LOW_TEX = isTouch ? 900 : 1280;
-  const HI_TEX = Math.min(3200, Math.round(Math.max(screen.width, screen.height) * Math.min(devicePixelRatio, 2) * 1.05));
+  const HI_TEX = 4096;       // photo ouverte : pleine définition des copies (2560 px), utile pour le zoom
+  const MAX_ZOOM = 3;
   const PR = Math.min(devicePixelRatio, 1.75);
 
   const STYLES = {
@@ -680,21 +681,144 @@
     let d = e.deltaY || e.deltaX;
     if (e.deltaMode === 1) d *= 33;
     if (e.deltaMode === 2) d *= innerHeight;
+    if (mode === "focus") { wheelZoom(d, e.clientX, e.clientY); return; }
     addScroll(d * 0.0085);
   }, { passive: false });
 
-  let touchY = null;
+  /* ----- Zoom dans une photo ouverte ----- */
+  const zoom = { k: 1, tk: 1, x: 0, y: 0, tx: 0, ty: 0 };
+  let exitAcc = 0;
+  function resetZoom() {
+    Object.assign(zoom, { tk: 1, tx: 0, ty: 0 });
+    exitAcc = 0;
+    document.body.classList.remove("is-zoom");
+  }
+  function focusFrame(it) {
+    const tf = Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
+    /* marge plus large en hauteur : la photo ne touche pas le titre en bas */
+    const dist = Math.max(((it.h3 / 2) / tf) * 1.38, ((it.w3 / 2) / (tf * camera.aspect)) * 1.18);
+    const viewH = 2 * dist * tf;
+    return { dist, viewH, viewW: viewH * camera.aspect };
+  }
+  function clampPan() {
+    if (!focusItem) return;
+    const fr = focusFrame(focusItem);
+    const mx = Math.max(0, (focusItem.w3 - fr.viewW / zoom.tk) / 2);
+    const my = Math.max(0, (focusItem.h3 - fr.viewH / zoom.tk) / 2);
+    zoom.tx = clamp(zoom.tx, -mx, mx);
+    zoom.ty = clamp(zoom.ty, -my, my);
+  }
+  /* zoome en gardant fixe le point de la photo situé sous le curseur (ou entre les doigts) */
+  function zoomAt(k, clientX, clientY) {
+    if (!focusItem) return;
+    const fr = focusFrame(focusItem);
+    k = clamp(k, 1, MAX_ZOOM);
+    const nx = (clientX / innerWidth) * 2 - 1, ny = -((clientY / innerHeight) * 2 - 1);
+    const px = zoom.tx + (nx * fr.viewW) / zoom.tk / 2, py = zoom.ty + (ny * fr.viewH) / zoom.tk / 2;
+    zoom.tk = k;
+    zoom.tx = px - (nx * fr.viewW) / k / 2;
+    zoom.ty = py - (ny * fr.viewH) / k / 2;
+    if (k <= 1.001) zoom.tx = zoom.ty = 0;
+    clampPan();
+    document.body.classList.toggle("is-zoom", k > 1.02);
+  }
+  function panBy(dxPx, dyPx) {
+    if (!focusItem) return;
+    const s = focusFrame(focusItem).viewH / zoom.tk / innerHeight;
+    zoom.tx -= dxPx * s;
+    zoom.ty += dyPx * s;
+    clampPan();
+  }
+  function wheelZoom(d, x, y) {
+    /* molette vers le bas alors qu'on n'est pas zoomé : on referme la photo */
+    if (zoom.tk <= 1.001 && d > 0) {
+      exitAcc += d;
+      if (exitAcc > 160) closeFocus();
+      return;
+    }
+    exitAcc = 0;
+    zoomAt(zoom.tk * Math.exp(-d * 0.0018), x, y);
+  }
+  const toggleZoom = (x, y) => zoomAt(zoom.tk > 1.02 ? 1 : 2.5, x, y);
+
+  /* souris : glisser pour se déplacer dans la photo zoomée */
+  let drag = null, dragMoved = false, clickTimer = null, lastTouch = 0;
+  $("#gl").addEventListener("mousedown", (e) => {
+    if (mode !== "focus" || zoom.tk <= 1.01) return;
+    drag = { x: e.clientX, y: e.clientY };
+    dragMoved = false;
+  });
+  addEventListener("mousemove", (e) => {
+    if (!drag) return;
+    panBy(e.clientX - drag.x, e.clientY - drag.y);
+    if (Math.abs(e.clientX - drag.x) + Math.abs(e.clientY - drag.y) > 2) dragMoved = true;
+    drag.x = e.clientX; drag.y = e.clientY;
+  });
+  addEventListener("mouseup", () => { drag = null; });
+  $("#gl").addEventListener("dblclick", (e) => {
+    if (mode !== "focus") return;
+    clearTimeout(clickTimer);
+    toggleZoom(e.clientX, e.clientY);
+  });
+
+  /* doigts : défiler, pincer pour zoomer, glisser, double-tap */
+  let touchY = null, pinch = null, tStart = null, tLast = null, lastTap = 0, tapTimer = null;
+  const tDist = (t) => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+  const tMid = (t) => ({ x: (t[0].clientX + t[1].clientX) / 2, y: (t[0].clientY + t[1].clientY) / 2 });
   addEventListener("touchstart", (e) => {
+    lastTouch = performance.now();
     if (inOverlay(e.target)) return;
+    if (mode === "focus") {
+      if (e.target.closest && e.target.closest("button, a")) return;
+      if (e.touches.length === 2) { pinch = { d0: tDist(e.touches), k0: zoom.tk }; tStart = null; }
+      else if (e.touches.length === 1 && !pinch) {
+        tStart = tLast = { x: e.touches[0].clientX, y: e.touches[0].clientY, t: performance.now() };
+      }
+      return;
+    }
     touchY = e.touches[0].clientY;
   }, { passive: true });
   addEventListener("touchmove", (e) => {
+    if (mode === "focus") {
+      if (pinch && e.touches.length === 2) {
+        const m = tMid(e.touches);
+        zoomAt((pinch.k0 * tDist(e.touches)) / pinch.d0, m.x, m.y);
+      } else if (tStart && e.touches.length === 1) {
+        const p = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        if (zoom.tk > 1.01) panBy(p.x - tLast.x, p.y - tLast.y);
+        tLast = p;
+      }
+      return;
+    }
     if (touchY === null) return;
     const y = e.touches[0].clientY;
     addScroll((touchY - y) * 0.03);
     touchY = y;
   }, { passive: true });
-  addEventListener("touchend", () => { touchY = null; });
+  addEventListener("touchend", (e) => {
+    lastTouch = performance.now();
+    touchY = null;
+    if (mode !== "focus") return;
+    if (pinch) { if (e.touches.length === 0) pinch = null; return; }
+    if (!tStart || e.touches.length > 0) return;
+    const dx = tLast.x - tStart.x, dy = tLast.y - tStart.y, quick = performance.now() - tStart.t < 400;
+    const x = tStart.x, y = tStart.y;
+    tStart = null;
+    if (zoom.tk > 1.01) {
+      /* zoomé : un double-tap revient à la vue entière */
+      if (Math.hypot(dx, dy) < 10) {
+        if (performance.now() - lastTap < 320) { toggleZoom(x, y); lastTap = 0; } else lastTap = performance.now();
+      }
+      return;
+    }
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) { stepFocus(dx < 0 ? 1 : -1); return; }
+    if (Math.abs(dy) > 70 && quick) { closeFocus(); return; }
+    if (Math.hypot(dx, dy) < 10) {
+      /* tap simple : revenir ; double-tap : zoomer */
+      if (performance.now() - lastTap < 320) { clearTimeout(tapTimer); lastTap = 0; toggleZoom(x, y); }
+      else { lastTap = performance.now(); tapTimer = setTimeout(() => { if (mode === "focus" && zoom.tk <= 1.01) closeFocus(); }, 330); }
+    }
+  });
 
   addEventListener("keydown", (e) => {
     if (!entered || mode === "warp") return;
@@ -717,6 +841,9 @@
 
   addEventListener("mousemove", (e) => {
     mouse.x = e.clientX; mouse.y = e.clientY;
+    /* le léger relief qui suit la souris : seulement avec une vraie souris
+       (sur téléphone, un toucher ne doit pas faire pencher la scène) */
+    if (!hasMouse) return;
     mouse.nx = (e.clientX / innerWidth) * 2 - 1;
     mouse.ny = -((e.clientY / innerHeight) * 2 - 1);
   });
@@ -735,7 +862,16 @@
   }
   $("#gl").addEventListener("click", (e) => {
     if (!entered) return;
-    if (mode === "focus") { closeFocus(); return; }
+    if (mode === "focus") {
+      /* sur téléphone, les gestes sont gérés plus haut */
+      if (performance.now() - lastTouch < 800) return;
+      if (dragMoved) { dragMoved = false; return; }
+      if (zoom.tk > 1.01) return;
+      /* petit délai : laisse la place au double-clic (zoom) */
+      clearTimeout(clickTimer);
+      clickTimer = setTimeout(() => { if (mode === "focus" && zoom.tk <= 1.01) closeFocus(); }, 260);
+      return;
+    }
     if (mode !== "travel") return;
     const p = pick(e.clientX, e.clientY);
     if (p) openFocus(p.it);
@@ -766,6 +902,7 @@
     focusItem = it;
     hovered = null;
     target = it.s;
+    resetZoom();
     document.body.classList.add("is-focus");
     focusNum.textContent = `${W.nom} · ${ROMAN[it.chapter.index] || ""} · ${pad(it.index + 1)} / ${pad(W.items.length)}`;
     focusTitle.textContent = it.titre || "";
@@ -778,6 +915,8 @@
     const it = focusItem;
     mode = "travel";
     focusItem = null;
+    resetZoom();
+    clearTimeout(clickTimer);
     document.body.classList.remove("is-focus");
     dropTimer = setTimeout(() => dropHi(it), 1500);
   }
@@ -785,6 +924,9 @@
     if (!focusItem) return;
     openFocus(W.items[(focusItem.index + d + W.items.length) % W.items.length]);
   }
+  $("#focusHint").textContent = hasMouse
+    ? "Molette ou double-clic pour zoomer · glisser pour se déplacer"
+    : "Pincer pour zoomer · glisser pour changer de photo";
   $("#focusPrev").addEventListener("click", () => stepFocus(-1));
   $("#focusNext").addEventListener("click", () => stepFocus(1));
   $("#focusClose").addEventListener("click", closeFocus);
@@ -970,7 +1112,7 @@
   const nowChapter = $("#nowChapter"), nowTitle = $("#nowTitle"), coordZ = $("#coordZ"), coordPct = $("#coordPct");
   let lastTitle = "", lastChapter = -2;
   const camTargetPos = new THREE.Vector3(), camTargetQuat = new THREE.Quaternion();
-  const euler = new THREE.Euler(), tmpN = new THREE.Vector3();
+  const euler = new THREE.Euler(), tmpN = new THREE.Vector3(), tmpR = new THREE.Vector3();
   camera.position.set(0, 0, CAM_START - current);
   let last = performance.now();
 
@@ -1023,18 +1165,21 @@
     /* caméra */
     if (mode === "focus" && focusItem) {
       const m = focusItem.mesh;
-      const tf = Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
-      const dist = Math.max((focusItem.h3 / 2) / tf, (focusItem.w3 / 2) / (tf * camera.aspect)) * 1.22;
+      zoom.k = lerp(zoom.k, zoom.tk, f(0.22));
+      zoom.x = lerp(zoom.x, zoom.tx, f(0.3));
+      zoom.y = lerp(zoom.y, zoom.ty, f(0.3));
+      const fr = focusFrame(focusItem);
       tmpN.set(0, 0, 1).applyQuaternion(m.quaternion);
-      camTargetPos.copy(m.position).addScaledVector(tmpN, dist);
-      camTargetPos.y -= focusItem.h3 * 0.05;
+      tmpR.set(1, 0, 0).applyQuaternion(m.quaternion);
+      camTargetPos.copy(m.position).addScaledVector(tmpN, fr.dist / zoom.k).addScaledVector(tmpR, zoom.x);
+      camTargetPos.y += zoom.y - (focusItem.h3 * 0.08) / zoom.k;
       camTargetQuat.copy(m.quaternion);
     } else {
       camTargetPos.set(mouse.nx * 0.35, mouse.ny * 0.16, camZ);
       euler.set(mouse.ny * 0.045, -mouse.nx * 0.075, -velN * 0.02 * motion);
       camTargetQuat.setFromEuler(euler);
     }
-    const ck = mode === "focus" ? f(0.07) : f(0.14);
+    const ck = mode === "focus" ? f(zoom.tk > 1.01 ? 0.25 : 0.08) : f(0.14);
     camera.position.lerp(camTargetPos, ck);
     camera.quaternion.slerp(camTargetQuat, ck);
 
@@ -1114,7 +1259,9 @@
       cur.x = lerp(cur.x, mouse.x, f(0.25));
       cur.y = lerp(cur.y, mouse.y, f(0.25));
       cursor.style.transform = `translate3d(${cur.x}px, ${cur.y}px, 0)`;
-      const label = hovered ? "Ouvrir" : mode === "focus" && !domHover ? "Revenir" : domHover ? domHover.dataset.cursor || "" : "";
+      const label = hovered ? "Ouvrir"
+        : mode === "focus" && !domHover ? (zoom.tk > 1.01 ? (drag ? "" : "Glisser") : "Revenir")
+        : domHover ? domHover.dataset.cursor || "" : "";
       cursor.classList.toggle("is-hover", !!(hovered || domHover));
       if (cursorLabel.textContent !== label) cursorLabel.textContent = label;
       if (prev.on) {
@@ -1170,6 +1317,7 @@
     worlds: openWorlds,
     teleport: (i) => teleport(worlds[i]),
     world: (i) => { switchWorld(worlds[i]); },
+    zoomInfo: () => ({ k: +zoom.k.toFixed(2), tk: +zoom.tk.toFixed(2), x: +zoom.tx.toFixed(3), y: +zoom.ty.toFixed(3), mode }),
     info: () => ({ world: W.nom, MAX_S: W.MAX_S, current, mode, loaded: doneCount, total: totalCount, errors: worlds.flatMap((w) => w.items.filter((i) => i.state === "error").map((i) => i.url)) }),
     get items() { return W.items; },
     get chapters() { return W.chapters; }
