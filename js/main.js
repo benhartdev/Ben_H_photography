@@ -109,7 +109,8 @@
         col *= 1.0 - smoothstep(0.7, 1.0, uWarp) * 0.92;
         float vig = smoothstep(0.92, 0.18, length(c * vec2(1.0, 0.92)));
         col *= mix(0.28, 1.0, vig);
-        col += (hash(vUv * uRes + fract(uTime) * 91.7) - 0.5) * 0.055;
+        /* tramage invisible (1/255) : évite les « marches » dans les dégradés sombres, sans grain visible */
+        col += (hash(vUv * uRes) - 0.5) / 255.0;
         gl_FragColor = vec4(col, 1.0);
       }`,
     depthTest: false, depthWrite: false
