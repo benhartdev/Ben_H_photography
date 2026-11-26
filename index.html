@@ -52,6 +52,7 @@
       <span class="brand__role">Photographe</span>
     </a>
     <nav class="menu">
+      <button id="btnWorlds">Univers</button>
       <button id="btnIndex">Index</button>
       <button id="btnAbout">À propos</button>
       <button id="btnSound" class="sound" aria-pressed="false">
@@ -100,6 +101,16 @@
     <canvas class="index__preview" id="indexPreview" width="640" height="640"></canvas>
   </div>
 
+  <!-- ===== Choix de l'univers ===== -->
+  <div class="worlds" id="worlds" aria-hidden="true">
+    <div class="worlds__bg" id="worldsBg"></div>
+    <div class="index__head">
+      <p class="index__kicker">Univers</p>
+      <button class="index__close" id="worldsClose" data-cursor="Fermer">Fermer</button>
+    </div>
+    <div class="worlds__list" id="worldsList"></div>
+  </div>
+
   <!-- ===== À propos (au bout du couloir) ===== -->
   <section class="about" id="about" aria-hidden="true">
     <div class="about__inner">
@@ -117,7 +128,10 @@
           <a href="#" data-cursor="Ouvrir">LinkedIn</a>
         </div>
       </div>
-      <button class="about__restart" id="restart" data-cursor="Retour">Recommencer la traversée ↺</button>
+      <div class="about__actions">
+        <button class="about__next" id="aboutNext" data-cursor="Voyager"></button>
+        <button class="about__restart" id="restart" data-cursor="Retour">Recommencer la traversée ↺</button>
+      </div>
     </div>
   </section>
 

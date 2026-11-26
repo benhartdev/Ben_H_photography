@@ -92,6 +92,69 @@ const CHAPITRES = [
   }
 ];
 
+/* =========================================================
+   UNIVERS « ÉCRINS » — OBJETS D'ART
+   (copies allégées dans photos-web/objets/)
+   ========================================================= */
+const CHAPITRES_OBJETS = [
+  {
+    titre: "L'Œil",
+    sousTitre: "Une fente de lumière dans la matière",
+    photos: [
+      { f: "37.jpg", titre: "Iris", w: 2560, h: 1440 },
+      { f: "38.jpg", titre: "Regard", w: 2560, h: 1440 },
+      { f: "42.jpg", titre: "Fêlure", w: 2560, h: 1510 },
+      { f: "43.jpg", titre: "Lisière", w: 2560, h: 1502 }
+    ]
+  },
+  {
+    titre: "Indigo",
+    sousTitre: "Matières profondes",
+    photos: [
+      { f: "BENH1397-Edit-Edit.jpg", titre: "Lune bleue", w: 2560, h: 2560 },
+      { f: "BENH1403-Edit.jpg", titre: "Sédiments", w: 2560, h: 1517 },
+      { f: "BENH1405-Edit.jpg", titre: "Glacier", w: 2560, h: 1552 }
+    ]
+  },
+  {
+    titre: "Plumes",
+    sousTitre: "Le souffle et le fil",
+    photos: [
+      { f: "BENH1868-Edit-Edit.jpg", titre: "Envolée", w: 2560, h: 2560 },
+      { f: "BENH1877-Edit-Edit - Copie-tif.jpg", titre: "Tourbillon", w: 2560, h: 2560 },
+      { f: "BENH1898-Edit - Copie-tif.jpg", titre: "Nid", w: 2560, h: 1707 },
+      { f: "BENH1901-Edit.jpg", titre: "Duvet", w: 2560, h: 1499 }
+    ]
+  },
+  {
+    titre: "Dentelle",
+    sousTitre: "L'or sur la nuit",
+    photos: [
+      { f: "BENH1945-Edit.jpg", titre: "Médaillon", w: 2560, h: 2560 },
+      { f: "BENH1972-Edit ok - Copie-tif.jpg", titre: "Broderie", w: 1920, h: 2560 },
+      { f: "BENH1973-Edit.jpg", titre: "Fil d'or", w: 2560, h: 1509 }
+    ]
+  },
+  {
+    titre: "Constellation",
+    sousTitre: "L'ensemble",
+    photos: [
+      { f: "compo-tableau-cat.jpg", titre: "La constellation", w: 2560, h: 1606 }
+    ]
+  }
+];
+/* Doublons laissés de côté : BENH1403-Edit-tif.jpg (version TIFF de BENH1403-Edit.jpg),
+   BENH1921-Edit-Edit.jpg (quasi identique à 38.jpg) */
+
+/* =========================================================
+   LES UNIVERS (l'ordre = l'ordre dans le menu « Univers »)
+   style : "couloir" (galerie noire) ou "ecrin" (objets sous projecteur)
+   ========================================================= */
+const UNIVERS = [
+  { nom: "Perspectives", accroche: "Photographies", sousTitre: "Une traversée en noir et blanc", style: "couloir", dossier: DOSSIER_PHOTOS, chapitres: CHAPITRES },
+  { nom: "Écrins", accroche: "Objets d'art", sousTitre: "La matière sous la lumière", style: "ecrin", dossier: "photos-web/objets/", chapitres: CHAPITRES_OBJETS }
+];
+
 /* Doublons laissés de côté (même image que d'autres fichiers) :
    BENH4968-Modifier-Modifier.jpg, cemex_pano_300dpi_130_70_web.jpg,
    bir hakeim 8111_400dpi_agran_150cm.jpg, bir-hakeim-pont-massif-120_77_12_300dpi_web.jpg */

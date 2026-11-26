@@ -4,13 +4,23 @@ Site portfolio immersif en 3D. On ne fait pas défiler une page : on **avance da
 où les photographies flottent de part et d'autre, se matérialisent à l'approche et se reflètent
 sur un sol invisible.
 
+## Deux univers
+
+| Univers | Contenu | Ambiance |
+|---|---|---|
+| **Perspectives** | Photographies (architecture, ville, nuit, industrie, nature) | Couloir noir, photos de part et d'autre, lignes de fuite |
+| **Écrins** | Objets d'art | Œuvres en lévitation dans le noir, chacune sous son projecteur, halo bleuté |
+
+On passe de l'un à l'autre par le menu **Univers** : effet de téléportation (aspiration, distorsion,
+fondu au noir) puis arrivée dans l'autre monde.
+
 ## L'expérience
 
 - **Entrée** : écran de chargement, puis choix « avec le son » ou « en silence ».
 - **Traversée** : le défilement fait avancer la caméra ; plus on va vite, plus l'image se déforme
   (aberration chromatique, distorsion, flou de vitesse).
-- **Chapitres** : Bir-Hakeim, Architecture, Ville & nuit, Industrie, Nature — de grands titres
-  flottants que l'on traverse.
+- **Chapitres** : de grands titres flottants que l'on traverse (Bir-Hakeim, Architecture,
+  Ville & nuit, Industrie, Nature ; L'Œil, Indigo, Plumes, Dentelle, Constellation).
 - **Photo ouverte** : un clic, la caméra vole jusqu'à la photo et la charge en haute définition
   (flèches ← → pour naviguer, Échap pour revenir).
 - **Index** : toutes les photos par chapitre, avec aperçu au survol.
@@ -34,9 +44,9 @@ Puis ouvrir <http://localhost:8000> dans Chrome ou Edge.
 |---|---|
 | `index.html` | Structure et textes (à propos, contact) |
 | `css/style.css` | Apparence |
-| `js/photos.js` | Liste des photos par chapitre, bande son |
+| `js/photos.js` | Univers, chapitres, photos, bande son |
 | `js/main.js` | Scène 3D et effets |
-| `photos-web/` | Photos allégées utilisées par le site |
+| `photos-web/` | Photos allégées utilisées par le site (`photos-web/objets/` pour Écrins) |
 | `son/` | Bande son (facultative) |
 
 Les originaux haute définition (`photos/`) ne sont pas publiés dans ce dépôt.

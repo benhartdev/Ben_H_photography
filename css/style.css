@@ -110,7 +110,9 @@ body.is-entered .loader { opacity: 0; visibility: hidden; }
 body.is-entered .hud { opacity: 1; }
 body.is-focus .hud-bottom, body.is-focus .hud-rail,
 body.is-index .hud-bottom, body.is-index .hud-rail,
-body.is-about .hud-bottom, body.is-about .hud-rail { opacity: 0; transition-delay: 0s; }
+body.is-about .hud-bottom, body.is-about .hud-rail,
+body.is-worlds .hud-bottom, body.is-worlds .hud-rail,
+body.is-warp .hud-bottom, body.is-warp .hud-rail { opacity: 0; transition-delay: 0s; }
 .hud a, .hud button { pointer-events: auto; }
 
 .hud-top {
@@ -237,6 +239,47 @@ body.is-index .index__item { opacity: 1; transform: none; transition: opacity .8
 .index__preview.is-on { opacity: 1; }
 
 /* =========================================================
+   CHOIX DE L'UNIVERS
+   ========================================================= */
+.worlds {
+  position: fixed; inset: 0; z-index: 31; overflow-y: auto;
+  background: rgba(8, 8, 10, 0.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  clip-path: circle(0% at 50% 50%); transition: clip-path 1.2s var(--ease);
+  display: flex; flex-direction: column; touch-action: pan-y;
+}
+body.is-worlds .worlds { clip-path: circle(150% at 50% 50%); }
+.worlds__bg {
+  position: fixed; inset: -40px; z-index: 0; pointer-events: none;
+  background-size: cover; background-position: center;
+  filter: blur(28px) brightness(.38) saturate(.9); opacity: 0; transform: scale(1.08);
+  transition: opacity 1s var(--ease), transform 2.4s var(--ease-out);
+}
+.worlds__bg.is-on { opacity: 1; transform: scale(1); }
+.worlds .index__head { position: relative; z-index: 2; width: 100%; }
+.worlds__list {
+  position: relative; z-index: 1; flex: 1; width: 100%; max-width: 2000px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  align-content: center; gap: 6vh 6vw; padding: 4vh var(--pad) 12vh;
+}
+.world {
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 18px;
+  padding: 5vh 2vw; color: var(--ink); opacity: 0; transform: translateY(24px);
+  transition: opacity 1s var(--ease-out) var(--d), transform 1s var(--ease-out) var(--d);
+}
+body.is-worlds .world { opacity: 1; transform: none; }
+.world__num { font-family: var(--mono); font-size: 11px; letter-spacing: .3em; color: var(--mute); }
+.world__name {
+  font-family: var(--serif); font-style: italic; font-weight: 300; line-height: .95;
+  font-size: clamp(56px, 7vw, 150px); transition: letter-spacing 1s var(--ease-out), color .6s;
+}
+.world__sub { font-family: var(--serif); font-size: clamp(18px, 1.4vw, 26px); color: var(--mute); }
+.world__meta { font-family: var(--mono); font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: var(--mute); }
+.world__here { color: var(--ink); }
+.worlds__list:hover .world { color: rgba(235, 231, 224, .3); }
+.worlds__list .world:hover { color: var(--ink); }
+.worlds__list .world:hover .world__name { letter-spacing: .03em; }
+
+/* =========================================================
    À PROPOS
    ========================================================= */
 .about {
@@ -259,7 +302,15 @@ body.is-about .about { opacity: 1; pointer-events: auto; }
 .about__mail:hover::after { transform: scaleX(1); }
 .about__links { display: flex; gap: 32px; font-family: var(--mono); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--mute); }
 .about__links a:hover { color: var(--ink); }
-.about__restart { margin-top: 3vh; font-family: var(--mono); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--mute); }
+.about__actions { margin-top: 3vh; display: flex; flex-direction: column; align-items: center; gap: 22px; }
+.about__next {
+  padding: 14px 30px; border: 1px solid rgba(235, 231, 224, .4); border-radius: 100px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
+  transition: background .5s, color .5s;
+}
+.about__next:hover { background: var(--ink); color: var(--bg); }
+.about__next:empty { display: none; }
+.about__restart { font-family: var(--mono); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--mute); }
 .about__restart:hover { color: var(--ink); }
 
 /* =========================================================
