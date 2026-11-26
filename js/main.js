@@ -293,7 +293,7 @@
         });
         it.pool = new THREE.Mesh(poolGeo, glowMat(new THREE.Color(0.78, 0.84, 1.0), 2.0, 0.28));
         it.pool.rotation.x = -Math.PI / 2;
-        it.halo = new THREE.Mesh(quad, glowMat(new THREE.Color(0.35, 0.45, 0.95), 2.6, 0.15));
+        it.halo = new THREE.Mesh(quad, glowMat(new THREE.Color(0.35, 0.45, 0.95), 2.6, 0.11));
         it.halo.renderOrder = -1;
         w.group.add(it.beam, it.pool, it.halo);
       }
