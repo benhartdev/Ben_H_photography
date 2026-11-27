@@ -140,7 +140,7 @@ body.is-warp .hud-bottom, body.is-warp .hud-rail { opacity: 0; transition-delay:
 
 .hud-rail { left: var(--pad); top: 50%; transform: translateY(-50%); }
 .rail { position: relative; width: 1px; height: 36vh; background: var(--faint); }
-.rail__fill { position: absolute; left: 0; top: 0; width: 1px; height: 100%; background: var(--ink); transform-origin: top; transform: scaleY(0); }
+.rail__fill { position: absolute; left: 0; bottom: 0; width: 1px; height: 100%; background: var(--ink); transform-origin: bottom; transform: scaleY(0); }
 .rail__tick { position: absolute; left: -4px; width: 9px; height: 1px; background: var(--mute); }
 .rail__tick span {
   position: absolute; left: 18px; top: -6px; white-space: nowrap;

@@ -443,23 +443,35 @@
     mesh.userData.epi = !!opts.epi;
     w.group.add(mesh);
     w.titleMeshes.push(mesh);
+    /* titre déjà dessiné en image (ex. avec une police qu'on ne peut pas publier) :
+       on remplace le texte par l'image ; si elle manque, le texte dessiné reste */
+    if (opts.image) {
+      new THREE.TextureLoader().load(opts.image, (img) => {
+        img.anisotropy = maxAniso;
+        mesh.material.map.dispose();
+        mesh.material.map = img;
+        mesh.material.needsUpdate = true;
+      }, undefined, () => {});
+    }
+    return mesh;
   }
   const MONO = '"IBM Plex Mono", monospace', SERIF = '"Cormorant Garamond", serif';
   function buildTitles(w) {
     const I = w.st.ink, A = w.st.accent;
+    const img = (name) => (w.cfg.titresImages ? { image: w.cfg.titresImages + name } : {});
     textPlane(w, [
       { text: `BENJAMIN HOFFELÉ  —  ${(w.accroche || "").toUpperCase()}`, font: `300 34px ${MONO}`, color: A + ".7)", spacing: "14px", y: 300 },
       { text: w.nom, font: `italic 300 300px ${SERIF}`, color: I + "1)", y: 540 },
       { rule: 120, color: A + ".45)", y: 720 },
       { text: w.sousTitre, font: `300 60px ${SERIF}`, color: I + ".7)", y: 800 }
-    ], 8.6, 4.3, -3);
+    ], 8.6, 4.3, -3, img("intro.png"));
     w.chapters.forEach((c) => textPlane(w, [
       { text: `CHAPITRE ${ROMAN[c.index] || c.index + 1}`, font: `300 34px ${MONO}`, color: A + ".7)", spacing: "14px", y: 300 },
       { rule: 90, color: A + ".45)", y: 350 },
       { text: c.titre, font: `italic 300 240px ${SERIF}`, color: I + "1)", y: 530 },
       { text: c.sousTitre, font: `300 64px ${SERIF}`, color: I + ".72)", y: 720 },
       { text: `${pad(c.items.length)} ${w.ecrin ? "ŒUVRES" : "PHOTOGRAPHIES"}`, font: `300 26px ${MONO}`, color: A + ".55)", spacing: "10px", y: 830 }
-    ], 7.4, 3.7, c.z));
+    ], 7.4, 3.7, c.z, img(`chapitre-${c.index + 1}.png`)));
     const txt = (s) => ($(s) ? $(s).textContent.replace(/\s+/g, " ").trim() : "");
     textPlane(w, [
       { text: "ÉPILOGUE", font: `300 30px ${MONO}`, color: A + ".7)", spacing: "14px", y: 140 },
@@ -1073,7 +1085,7 @@
     ticks = W.chapters.map((c) => {
       const t = document.createElement("i");
       t.className = "rail__tick";
-      t.style.top = (c.s / W.MAX_S) * 100 + "%";
+      t.style.bottom = (c.s / W.MAX_S) * 100 + "%";  /* de bas en haut : on monte en avançant */
       t.innerHTML = `<span>${ROMAN[c.index] || ""} — ${c.titre}</span>`;
       rail.appendChild(t);
       return t;

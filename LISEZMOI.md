@@ -36,3 +36,10 @@ en haut de `js/photos.js`). Sans fichier, le site joue une ambiance générée.
     git add -A
     git commit -m "Description de ce que tu as changé"
     git push
+
+## Titres 3D de Perspectives (police BankGothic Md BT)
+Les grands titres 3D de l'univers Perspectives sont des images (`titres/perspectives/`),
+dessinées avec la police BankGothic Md BT installée sur le PC. La police elle-même n'est
+jamais publiée (licence). Après avoir renommé un chapitre dans `js/photos.js`, redessine-les :
+
+    sh outils/titres/generer.sh

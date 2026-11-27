@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<style>
+  @font-face { font-family: "BankTitre"; src: url("bankgothic.ttf"); }
+  body { margin: 0; background: #0a0a0b; }
+  canvas { display: block; width: 1024px; height: 512px; border-bottom: 1px solid #333; }
+</style></head>
+<body>
+<script src="../../js/photos.js"></script>
+<script>
+/* Dessine les titres 3D de l'univers Perspectives avec BankGothic Md BT.
+   Même mise en page que les titres du site (toile 2048 x 1024). */
+const F = '"BankTitre"';
+const INK = "rgba(235,231,224,";
+function draw(lines) {
+  const cv = document.createElement("canvas");
+  cv.width = 2048; cv.height = 1024;
+  const ctx = cv.getContext("2d");
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  for (const l of lines) {
+    if (l.rule) { ctx.fillStyle = l.color; ctx.fillRect(1024 - l.rule / 2, l.y, l.rule, 2); continue; }
+    let size = l.size;
+    ctx.letterSpacing = l.spacing || "0px";
+    ctx.font = `${size}px ${F}`;
+    /* réduit la taille si le texte dépasse la largeur disponible */
+    while (l.maxW && ctx.measureText(l.text).width > l.maxW && size > 20) { size -= 4; ctx.font = `${size}px ${F}`; }
+    ctx.fillStyle = l.color;
+    ctx.fillText(l.text, 1024, l.y);
+  }
+  document.body.appendChild(cv);
+  return cv.toDataURL("image/png");
+}
+async function generer() {
+  await document.fonts.load(`40px ${F}`);
+  if (!document.fonts.check(`40px ${F}`)) return { erreur: "police non chargée" };
+  const u = UNIVERS[0];
+  const out = {};
+  out["intro.png"] = draw([
+    { text: `BENJAMIN HOFFELÉ  —  ${u.accroche.toUpperCase()}`, size: 30, spacing: "12px", color: INK + ".6)", y: 300 },
+    { text: u.nom.toUpperCase(), size: 190, spacing: "14px", color: INK + "1)", y: 520, maxW: 1880 },
+    { rule: 120, color: INK + ".35)", y: 672 },
+    { text: u.sousTitre, size: 54, spacing: "6px", color: INK + ".72)", y: 770, maxW: 1800 }
+  ]);
+  const R = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
+  u.chapitres.forEach((c, i) => {
+    out[`chapitre-${i + 1}.png`] = draw([
+      { text: `CHAPITRE ${R[i]}`, size: 32, spacing: "14px", color: INK + ".6)", y: 300 },
+      { rule: 90, color: INK + ".35)", y: 350 },
+      { text: c.titre.toUpperCase(), size: 150, spacing: "10px", color: INK + "1)", y: 520, maxW: 1840 },
+      { text: c.sousTitre || "", size: 54, spacing: "6px", color: INK + ".72)", y: 690, maxW: 1800 },
+      { text: `${String(c.photos.length).padStart(2, "0")} PHOTOGRAPHIES`, size: 26, spacing: "10px", color: INK + ".45)", y: 800 }
+    ]);
+  });
+  return out;
+}
+</script>
+</body></html>

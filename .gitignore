@@ -8,3 +8,9 @@ desktop.ini
 
 # Réglages locaux de Claude Code
 .claude/
+
+# Fichiers de police : jamais publiés (licence)
+*.ttf
+*.otf
+*.woff
+*.woff2

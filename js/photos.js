@@ -151,7 +151,7 @@ const CHAPITRES_OBJETS = [
    style : "couloir" (galerie noire) ou "ecrin" (objets sous projecteur)
    ========================================================= */
 const UNIVERS = [
-  { nom: "Perspectives", accroche: "Photographies", sousTitre: "Une traversée en noir et blanc", style: "couloir", dossier: DOSSIER_PHOTOS, chapitres: CHAPITRES },
+  { nom: "Perspectives", accroche: "Photographies", sousTitre: "Une traversée en noir et blanc", style: "couloir", dossier: DOSSIER_PHOTOS, chapitres: CHAPITRES, titresImages: "titres/perspectives/" },
   { nom: "Écrins", accroche: "Mise en valeur d'objets d'art", sousTitre: "La matière sous la lumière", style: "ecrin", dossier: "photos-web/objets/", chapitres: CHAPITRES_OBJETS }
 ];
 
