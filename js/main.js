@@ -430,6 +430,15 @@
     ctx.textAlign = "center"; ctx.textBaseline = "middle";
     lines.forEach((l) => {
       if (l.rule) { ctx.fillStyle = l.color; ctx.fillRect(1024 - l.rule / 2, l.y, l.rule, 2); return; }
+      if (l.img) {
+        if (l.img.naturalWidth) {
+          const ih = (l.w * l.img.naturalHeight) / l.img.naturalWidth;
+          ctx.globalAlpha = l.alpha || 1;
+          ctx.drawImage(l.img, 1024 - l.w / 2, l.y - ih / 2, l.w, ih);
+          ctx.globalAlpha = 1;
+        }
+        return;
+      }
       ctx.font = l.font; ctx.fillStyle = l.color;
       if ("letterSpacing" in ctx) ctx.letterSpacing = l.spacing || "0px";
       if (l.wrap) wrapLines(ctx, l.text, l.wrap).forEach((t, i) => ctx.fillText(t, 1024, l.y + i * l.lh));
@@ -476,10 +485,10 @@
     textPlane(w, [
       { text: "ÉPILOGUE", font: `300 30px ${MONO}`, color: A + ".7)", spacing: "14px", y: 140 },
       { text: txt(".about__quote"), font: `italic 300 108px ${SERIF}`, color: I + "1)", y: 290, wrap: 1760, lh: 118 },
-      { text: txt(".about__text"), font: `300 36px Inter, sans-serif`, color: I + ".62)", y: 560, wrap: 1180, lh: 60 },
-      { text: txt(".about__mail"), font: `300 72px ${SERIF}`, color: I + "1)", y: 800 },
-      { text: txt(".about__tel"), font: `300 34px ${MONO}`, color: I + ".6)", spacing: "10px", y: 880 },
-      { rule: 160, color: A + ".5)", y: 930 }
+      { text: txt(".about__text"), font: `300 33px Inter, sans-serif`, color: I + ".62)", y: 520, wrap: 1300, lh: 54 },
+      { img: logoImg, w: 500, alpha: 0.92, y: 785 },
+      { text: txt(".about__mail"), font: `300 64px ${SERIF}`, color: I + "1)", y: 880 },
+      { text: txt(".about__tel"), font: `300 30px ${MONO}`, color: I + ".6)", spacing: "10px", y: 950 }
     ], 7.4, 3.7, w.EPI_Z, { epi: true, y: 0.1 });
     layoutWorld(w);
   }
@@ -566,11 +575,15 @@
   const subEl = $("#loaderSub");
   let fontsReady = false, ready = false, entered = false, shownPct = 0;
   const t0 = performance.now();
+  /* la signature (logo), aussi dessinée sur le panneau 3D de l'épilogue */
+  const logoImg = new Image();
+  if ($(".about__logo")) logoImg.src = $(".about__logo").src;
   Promise.race([
     Promise.all([
       document.fonts.load(`italic 300 100px "Cormorant Garamond"`),
       document.fonts.load(`300 100px "Cormorant Garamond"`),
-      document.fonts.load(`300 20px "IBM Plex Mono"`)
+      document.fonts.load(`300 20px "IBM Plex Mono"`),
+      logoImg.decode().catch(() => {})
     ]),
     new Promise((r) => setTimeout(r, 4000))
   ]).then(() => { fontsReady = true; worlds.forEach(buildTitles); });
